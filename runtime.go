@@ -19,7 +19,10 @@ package runtime
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"os/exec"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -170,4 +173,17 @@ func Must(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+// GOPath returns the go path for the current host
+func GOPath() string {
+	gopath := os.Getenv("GOPATH")
+	if gopath != "" {
+		return gopath
+	}
+	out, err := exec.Command("go", "env", "GOPATH").Output()
+	if err != nil {
+		klog.Fatal(err)
+	}
+	return strings.TrimSpace(string(out))
 }
